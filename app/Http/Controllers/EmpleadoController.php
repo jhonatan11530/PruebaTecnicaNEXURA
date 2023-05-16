@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\areas;
 use App\empleado;
+use App\roles;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmpleadoController extends Controller
 {
@@ -14,7 +18,8 @@ class EmpleadoController extends Controller
      */
     public function index()
     {
-        //
+        $response = DB::table('empleado')->join('areas', 'empleado.area_id', '=', 'areas.id')->select('empleado.id', 'empleado.nombre', 'empleado.email', 'empleado.sexo', 'areas.nombre as area', 'empleado.boletin')->get();
+        return view('inicio.index', compact('response'));
     }
 
     /**
@@ -24,7 +29,9 @@ class EmpleadoController extends Controller
      */
     public function create()
     {
-        //
+        $roles = roles::all();
+        $areas = areas::all();
+        return view('inicio.create', compact('roles', 'areas'));
     }
 
     /**
@@ -35,7 +42,39 @@ class EmpleadoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'Nombre' => 'required',
+            'Correo' => 'required',
+            'Sexo' => 'required',
+            'Area' => 'required',
+            'Descripcion' => 'required',
+            'Roles' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        } else {
+            if (isset($request->boletin)) {
+                empleado::create([
+                    'nombre' => $request->Nombre,
+                    'email' => $request->Correo,
+                    'sexo' => $request->Sexo,
+                    'area_id' => $request->Area,
+                    'boletin' => $request->boletin,
+                    'descripcion' => $request->Descripcion,
+                ]);
+                return redirect('inicio');
+            } else {
+                empleado::create([
+                    'nombre' => $request->Nombre,
+                    'email' => $request->Correo,
+                    'sexo' => $request->Sexo,
+                    'area_id' => $request->Area,
+                    'boletin' => 0,
+                    'descripcion' => $request->Descripcion,
+                ]);
+                return redirect('inicio');
+            }
+        }
     }
 
     /**
@@ -78,8 +117,10 @@ class EmpleadoController extends Controller
      * @param  \App\empleado  $empleado
      * @return \Illuminate\Http\Response
      */
-    public function destroy(empleado $empleado)
+    public function destroy($id)
     {
-        //
+        $operador = empleado::find($id);
+        $operador->delete();
+        return redirect('inicio');
     }
 }
