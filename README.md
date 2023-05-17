@@ -17,9 +17,17 @@ en esta prueba tecnica encontrara el codigo fuente de la prueba tecnica basada e
 
 3. verifique en la base de datos MYSQL que exista la base de datos llamado "prueba_tecnica_dev"
 
-2. abra visual studio code y abra la carpeta donde esta el proyecto y en la terminal de VSCODE ejecute el comando : composer install
+2. abra visual studio code y abra la carpeta donde esta el proyecto y en la terminal de VSCODE ejecute el comando 
 
-3. luego de que aya terminado el composer de instalar todas las librerias ejecute en la terminal de VSCODE : php artisan serve
+```
+composer install
+```
+
+3. luego de que aya terminado el composer de instalar todas las librerias ejecute en la terminal de VSCODE 
+
+```
+php artisan serve
+```
 
 4. eso es todo dentro del proyecto laravel se dejo configurado el framework para que ejecute los migradores de tablas e insertes los datos igual como esta en la prueba tecnica
 
