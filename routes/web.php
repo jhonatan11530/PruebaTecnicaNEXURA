@@ -21,6 +21,7 @@ Route::get('/', function () {
 
     // Ejecutar seeders
     Artisan::call('db:seed');
+    
     return redirect('inicio');
 });
 
