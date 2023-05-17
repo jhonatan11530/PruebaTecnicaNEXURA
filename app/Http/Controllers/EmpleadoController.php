@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\areas;
 use App\empleado;
+use App\empleado_rol;
 use App\roles;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -54,24 +55,38 @@ class EmpleadoController extends Controller
             return back()->withErrors($validator);
         } else {
             if (isset($request->boletin)) {
-                empleado::create([
-                    'nombre' => $request->Nombre,
-                    'email' => $request->Correo,
-                    'sexo' => $request->Sexo,
-                    'area_id' => $request->Area,
-                    'boletin' => $request->boletin,
-                    'descripcion' => $request->Descripcion,
+
+                $empleado = new empleado();
+                $empleado->nombre = $request->Nombre;
+                $empleado->email = $request->Correo;
+                $empleado->sexo = $request->Sexo;
+                $empleado->area_id = $request->Area;
+                $empleado->boletin = $request->boletin;
+                $empleado->descripcion = $request->Descripcion;
+                $empleado->save();
+
+                empleado_rol::create([
+                    'empleado_id' => $empleado->id,
+                    'rol_id' => $request->Area,
                 ]);
+
                 return redirect('inicio');
             } else {
-                empleado::create([
-                    'nombre' => $request->Nombre,
-                    'email' => $request->Correo,
-                    'sexo' => $request->Sexo,
-                    'area_id' => $request->Area,
-                    'boletin' => 0,
-                    'descripcion' => $request->Descripcion,
+
+                $empleado = new empleado();
+                $empleado->nombre = $request->Nombre;
+                $empleado->email = $request->Correo;
+                $empleado->sexo = $request->Sexo;
+                $empleado->area_id = $request->Area;
+                $empleado->boletin = 0;
+                $empleado->descripcion = $request->Descripcion;
+                $empleado->save();
+
+                empleado_rol::create([
+                    'empleado_id' => $empleado->id,
+                    'rol_id' => $request->Area,
                 ]);
+
                 return redirect('inicio');
             }
         }
@@ -94,9 +109,13 @@ class EmpleadoController extends Controller
      * @param  \App\empleado  $empleado
      * @return \Illuminate\Http\Response
      */
-    public function edit(empleado $empleado)
+    public function edit($id)
     {
-        //
+        $empleado = empleado::find($id);
+        $rolemp = DB::table('empleado_rol')->where('empleado_id', $id)->get();
+        $roles = roles::all();
+        $areas = areas::all();
+        return view('inicio.edit', compact('empleado', 'rolemp', 'roles', 'areas'));
     }
 
     /**
@@ -106,9 +125,49 @@ class EmpleadoController extends Controller
      * @param  \App\empleado  $empleado
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, empleado $empleado)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'Nombre' => 'required',
+            'Correo' => 'required',
+            'Sexo' => 'required',
+            'Area' => 'required',
+            'Descripcion' => 'required',
+            'Roles' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        } else {
+            if (isset($request->boletin)) {
+
+                $empleado = empleado::find($id);
+                $empleado->nombre = $request->Nombre;
+                $empleado->email = $request->Correo;
+                $empleado->sexo = $request->Sexo;
+                $empleado->area_id = $request->Area;
+                $empleado->boletin = $request->boletin;
+                $empleado->descripcion = $request->Descripcion;
+                $empleado->update();
+
+                empleado_rol::where('empleado_id', $id)->update(['empleado_id' => $empleado->id, 'rol_id' => $empleado->area_id]);
+
+                return redirect('inicio');
+            } else {
+
+                $empleado = empleado::find($id);
+                $empleado->nombre = $request->Nombre;
+                $empleado->email = $request->Correo;
+                $empleado->sexo = $request->Sexo;
+                $empleado->area_id = $request->Area;
+                $empleado->boletin = 0;
+                $empleado->descripcion = $request->Descripcion;
+                $empleado->update();
+
+                empleado_rol::where('empleado_id', $id)->update(['empleado_id' => $empleado->id, 'rol_id' => $empleado->area_id]);
+
+                return redirect('inicio');
+            }
+        }
     }
 
     /**
@@ -121,6 +180,9 @@ class EmpleadoController extends Controller
     {
         $operador = empleado::find($id);
         $operador->delete();
+
+        $id = empleado_rol::where('empleado_id', $id);
+        $id->delete();
         return redirect('inicio');
     }
 }

@@ -13,18 +13,20 @@ class CreateEmpleadosTable extends Migration
      */
     public function up()
     {
+        Schema::disableForeignKeyConstraints();
+
         Schema::create('empleado', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             $table->string('email');
             $table->char('sexo', 1);
-            $table->integer('area_id')->unsigned();
+            $table->unsignedBigInteger('area_id');
             $table->integer('boletin')->nullable();
             $table->text('descripcion');
             $table->timestamps();
-
-            //$table->foreign('area_id')->references('id')->on('areas')->onDelete('cascade')->onUpdate('cascade');
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -34,6 +36,10 @@ class CreateEmpleadosTable extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
+
         Schema::dropIfExists('empleados');
+
+        Schema::enableForeignKeyConstraints();
     }
 }

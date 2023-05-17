@@ -14,12 +14,8 @@ class CreateEmpleadoRolsTable extends Migration
     public function up()
     {
         Schema::create('empleado_rol', function (Blueprint $table) {
-            $table->integer('empleado_id')->unsigned();
-            $table->integer('rol_id')->unsigned();
-            $table->timestamps();
-
-            //$table->foreign('empleado_id')->references('id')->on('empleado')->onDelete('cascade')->onUpdate('cascade');
-            //$table->foreign('rol_id')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
+            $table->unsignedBigInteger('empleado_id')->nullable();
+            $table->unsignedBigInteger('rol_id')->nullable();
         });
     }
 

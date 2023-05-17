@@ -50,7 +50,8 @@
                                                         Acciones
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">Editar</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('inicio.edit', $item->id) }}">Editar</a>
                                                         <a class="dropdown-item" data-toggle="modal" data-target="#eliminar"
                                                             href="#">Eliminar</a>
                                                     </div>
